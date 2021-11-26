@@ -1,0 +1,3 @@
+[submodule "openapi-generator"]
+	path = openapi-generator
+	url = git@github.com:Airthings/openapi-generator.git
