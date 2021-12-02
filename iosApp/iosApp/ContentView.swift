@@ -6,7 +6,7 @@ struct ContentView: View {
 
 	var body: some View {
         Text(text).onAppear {
-            Greeting().greetPet { greeting, _ in
+            Greeter().greetPet { greeting, _ in
                 text = greeting ?? "Something went wrong. 💩"
             }
         }
