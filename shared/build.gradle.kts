@@ -25,7 +25,7 @@ kotlin {
                     }
                 }
                 implementation(project(":openapi-generator:samples:client:petstore:kotlin-multiplatform"))
-                implementation("io.ktor:ktor-client-logging:1.6.3")
+                implementation("io.ktor:ktor-client-logging:1.6.4")
             }
         }
         val commonTest by getting {
