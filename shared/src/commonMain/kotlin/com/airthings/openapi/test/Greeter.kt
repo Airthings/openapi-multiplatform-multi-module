@@ -2,9 +2,12 @@ package com.airthings.openapi.test
 
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.features.UserAgent
+import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.Logging
+import kotlinx.serialization.json.Json
 import org.openapitools.client.apis.PetApi
 
 private fun createPetApi(): PetApi = PetApi(httpClientConfig = createHttpClientConfig())
@@ -21,6 +24,11 @@ private fun createHttpClientConfig(): ((HttpClientConfig<*>) -> Unit) =
                 }
             }
             level = LogLevel.ALL
+        }
+        clientConfig.install(JsonFeature) {
+            serializer = KotlinxSerializer(
+                Json { ignoreUnknownKeys = true }
+            )
         }
     }
 
