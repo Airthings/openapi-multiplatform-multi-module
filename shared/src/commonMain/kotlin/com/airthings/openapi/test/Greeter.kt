@@ -25,11 +25,6 @@ private fun createHttpClientConfig(): ((HttpClientConfig<*>) -> Unit) =
             }
             level = LogLevel.ALL
         }
-        clientConfig.install(JsonFeature) {
-            serializer = KotlinxSerializer(
-                Json { ignoreUnknownKeys = true }
-            )
-        }
     }
 
 class Greeter {
