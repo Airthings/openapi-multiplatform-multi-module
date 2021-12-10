@@ -1,74 +1,63 @@
 package com.airthings.openapi.test
 
-import io.ktor.client.HttpClient
 import io.ktor.client.call.HttpClientCall
-import io.ktor.client.engine.HttpClientEngine
-import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respond
-import io.ktor.client.engine.mock.respondOk
-import kotlinx.coroutines.runBlocking
-import org.openapitools.client.apis.PetApi
-import org.openapitools.client.infrastructure.HttpResponse
-import org.openapitools.client.models.Pet
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.client.request.get
-import io.ktor.client.request.request
+import io.ktor.client.call.TypeInfo
 import io.ktor.http.Headers
 import io.ktor.http.HttpProtocolVersion
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.content.OutgoingContent
-import io.ktor.http.headersOf
 import io.ktor.util.date.GMTDate
 import io.ktor.utils.io.ByteReadChannel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import org.openapitools.client.infrastructure.wrap
+import kotlinx.coroutines.runBlocking
+import org.openapitools.client.apis.PetApi
+import org.openapitools.client.infrastructure.BodyProvider
+import org.openapitools.client.infrastructure.HttpResponse
+import org.openapitools.client.models.Pet
 import kotlin.coroutines.CoroutineContext
-
-class MockPetApi(
-    engine: HttpClientEngine,
-    private val findPetsByStatusResponse: List<Pet> = emptyList()
-) : PetApi() {
-    private val httpClient = HttpClient(engine)
-
-    override suspend fun findPetsByStatus(status: List<String>): HttpResponse<List<Pet>> =
-        httpClient.get
-
-}
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
 class GreeterTest {
     @Test
-    fun renameMe() {
-        val expected = ""
-
-        runBlocking {
-            val mockEngine = MockEngine { request ->
-                respond(
-                    content = ByteReadChannel(
-                        Json.encodeToString(
-                            listOf(
-                                Pet(
-                                    name = "Ape",
-                                    photoUrls = emptyList()
-                                )
-                            )
-                        )
-                    ),
-                    status = HttpStatusCode.OK,
-                    headers = headersOf("ContentType" to listOf("application/json"))
-                )
-            }
-            val greeter = Greeter(
-                petApi = MockPetApi(
-                    engine = mockEngine
+    fun testGreetPet() {
+        val petName = "Rex"
+        val petApi = PetApiStub(
+            findPetsByStatusResponse = listOf(
+                Pet(
+                    name = petName,
+                    photoUrls = emptyList()
                 )
             )
-            val actual = greeter.greetPet()
-            assertEquals(expected = expected, actual = actual)
+        )
+        val greeter = Greeter(petApi = petApi)
+        runBlocking {
+            assertTrue { greeter.greetPet().startsWith("Hello $petName!") }
         }
     }
+}
+
+private class PetApiStub(private val findPetsByStatusResponse: List<Pet>) : PetApi() {
+    override suspend fun findPetsByStatus(status: List<String>): HttpResponse<List<Pet>> =
+        HttpResponse(
+            response = KtorResponseStub(),
+            provider = BodyProviderStub(responseStub = findPetsByStatusResponse)
+        )
+}
+
+private class BodyProviderStub<T : Any>(val responseStub: T) : BodyProvider<T> {
+    override suspend fun body(response: io.ktor.client.statement.HttpResponse): T = responseStub
+    override suspend fun <V : Any> typedBody(
+        response: io.ktor.client.statement.HttpResponse,
+        type: TypeInfo
+    ): V = TODO("Not yet implemented")
+}
+
+private class KtorResponseStub : io.ktor.client.statement.HttpResponse() {
+    override val call: HttpClientCall get() = TODO("Not yet implemented")
+    override val content: ByteReadChannel get() = TODO("Not yet implemented")
+    override val coroutineContext: CoroutineContext get() = TODO("Not yet implemented")
+    override val headers: Headers = Headers.Empty
+    override val requestTime: GMTDate get() = TODO("Not yet implemented")
+    override val responseTime: GMTDate get() = TODO("Not yet implemented")
+    override val status: HttpStatusCode = HttpStatusCode.OK
+    override val version: HttpProtocolVersion get() = TODO("Not yet implemented")
 }
