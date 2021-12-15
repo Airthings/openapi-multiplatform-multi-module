@@ -7,14 +7,14 @@ import io.ktor.http.HttpProtocolVersion
 import io.ktor.http.HttpStatusCode
 import io.ktor.util.date.GMTDate
 import io.ktor.utils.io.ByteReadChannel
+import kotlin.coroutines.CoroutineContext
+import kotlin.test.Test
+import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
 import org.openapitools.client.apis.PetApi
 import org.openapitools.client.infrastructure.BodyProvider
 import org.openapitools.client.infrastructure.HttpResponse
 import org.openapitools.client.models.Pet
-import kotlin.coroutines.CoroutineContext
-import kotlin.test.Test
-import kotlin.test.assertTrue
 
 class GreeterTest {
     @Test
@@ -37,11 +37,13 @@ class GreeterTest {
 
 private class PetApiStub(private val findPetsByStatusResponse: List<Pet>) : PetApi() {
     override suspend fun findPetsByStatus(status: List<String>): HttpResponse<List<Pet>> =
-        HttpResponse(
-            response = KtorResponseStub(),
-            provider = BodyProviderStub(responseStub = findPetsByStatusResponse)
-        )
+        HttpResponseStub(responseStub = findPetsByStatusResponse)
 }
+
+private class HttpResponseStub<T : Any>(responseStub: T) : HttpResponse<T>(
+    response = KtorResponseStub(),
+    provider = BodyProviderStub(responseStub = responseStub),
+)
 
 private class BodyProviderStub<T : Any>(val responseStub: T) : BodyProvider<T> {
     override suspend fun body(response: io.ktor.client.statement.HttpResponse): T = responseStub
