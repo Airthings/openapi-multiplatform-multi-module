@@ -14,6 +14,7 @@ git clone --recursive git@github.com:Airthings/openapi-multiplatform-multi-modul
 
 Update the OpenAPI generated KMM code by running:
 ```
+(cd openapi-generator && ./mvnw clean package)
 (cd openapi-generator && ./bin/generate-samples.sh bin/configs/kotlin-multiplatform.yaml -- --additional-properties=omitGradlePluginVersions=true)
 ```
 
