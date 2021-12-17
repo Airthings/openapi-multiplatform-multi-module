@@ -10,7 +10,7 @@ import io.ktor.client.features.logging.Logging
 import kotlinx.serialization.json.Json
 import org.openapitools.client.apis.PetApi
 
-private fun createPetApi(): PetApi = PetApi(httpClientConfig = createHttpClientConfig())
+fun createPetApi(): PetApi = PetApi(httpClientConfig = createHttpClientConfig())
 
 private fun createHttpClientConfig(): ((HttpClientConfig<*>) -> Unit) =
     { clientConfig ->
@@ -27,9 +27,9 @@ private fun createHttpClientConfig(): ((HttpClientConfig<*>) -> Unit) =
         }
     }
 
-class Greeter {
+class Greeter internal constructor(private val petApi: PetApi) {
 
-    private val petApi by lazy { createPetApi() }
+    constructor() : this(createPetApi())
 
     @Throws(Throwable::class)
     suspend fun greetPet(): String =
