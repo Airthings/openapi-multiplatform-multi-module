@@ -29,21 +29,21 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.1.0-beta04"
+        kotlinCompilerExtensionVersion = "1.1.0-rc03"
     }
 }
 
 dependencies {
     implementation(project(":shared"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2-native-mt") {
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-native-mt") {
         version {
-            strictly("1.5.2-native-mt")
+            strictly("1.6.0-native-mt")
         }
     }
-    implementation("androidx.appcompat:appcompat:1.4.0")
+    implementation("androidx.appcompat:appcompat:1.4.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
     implementation("androidx.activity:activity-compose:1.4.0")
-    implementation("androidx.compose.material:material:1.1.0-beta04")
-    implementation("androidx.compose.ui:ui-tooling:1.1.0-beta04")
+    implementation("androidx.compose.material:material:1.1.0-rc03")
+    implementation("androidx.compose.ui:ui-tooling:1.1.0-rc03")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0")
 }
